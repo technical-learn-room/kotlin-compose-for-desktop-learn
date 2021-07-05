@@ -85,29 +85,21 @@ private fun createBoardRow(
     columnIndex: Int,
     team: OthelloTeam,
     targetRowIndex: OthelloIndex,
-) = if (rowIndex == targetRowIndex.index) {
-    val a = charArrayOf(
-        createBoardElement(gameBoard, rowIndex, columnIndex, team, targetRowIndex, OthelloIndex.ZERO),
-        createBoardElement(gameBoard, rowIndex, columnIndex, team, targetRowIndex, OthelloIndex.ONE),
-        createBoardElement(gameBoard, rowIndex, columnIndex, team, targetRowIndex, OthelloIndex.TWO),
-        createBoardElement(gameBoard, rowIndex, columnIndex, team, targetRowIndex, OthelloIndex.THREE),
-        createBoardElement(gameBoard, rowIndex, columnIndex, team, targetRowIndex, OthelloIndex.FOUR),
-        createBoardElement(gameBoard, rowIndex, columnIndex, team, targetRowIndex, OthelloIndex.FIVE),
-        createBoardElement(gameBoard, rowIndex, columnIndex, team, targetRowIndex, OthelloIndex.SIX),
-        createBoardElement(gameBoard, rowIndex, columnIndex, team, targetRowIndex, OthelloIndex.SEVEN),
+) = if (rowIndex == targetRowIndex.index)
+    charArrayOf(
+        createBoardElement(gameBoard, columnIndex, team, targetRowIndex, OthelloIndex.ZERO),
+        createBoardElement(gameBoard, columnIndex, team, targetRowIndex, OthelloIndex.ONE),
+        createBoardElement(gameBoard, columnIndex, team, targetRowIndex, OthelloIndex.TWO),
+        createBoardElement(gameBoard, columnIndex, team, targetRowIndex, OthelloIndex.THREE),
+        createBoardElement(gameBoard, columnIndex, team, targetRowIndex, OthelloIndex.FOUR),
+        createBoardElement(gameBoard, columnIndex, team, targetRowIndex, OthelloIndex.FIVE),
+        createBoardElement(gameBoard, columnIndex, team, targetRowIndex, OthelloIndex.SIX),
+        createBoardElement(gameBoard, columnIndex, team, targetRowIndex, OthelloIndex.SEVEN),
     )
-    println(a)
-    a
-}
-else {
-    val a = gameBoard[targetRowIndex.index]
-    println(a)
-    a
-}
+else gameBoard[targetRowIndex.index]
 
 private fun createBoardElement(
     gameBoard: OthelloGameBoard,
-    rowIndex: Int,
     columnIndex: Int,
     team: OthelloTeam,
     targetRowIndex: OthelloIndex,
