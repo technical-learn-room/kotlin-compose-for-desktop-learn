@@ -18,11 +18,6 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
-    testImplementation(kotlin("test"))
-}
-
-tasks.test {
-    useJUnitPlatform()
 }
 
 tasks.withType<KotlinCompile>() {
@@ -34,7 +29,7 @@ compose.desktop {
         mainClass = "MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "test"
+            packageName = "kotlin-compose-for-desktop-learn"
             packageVersion = "1.0.0"
         }
     }

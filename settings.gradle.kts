@@ -5,5 +5,5 @@ pluginManagement {
     }
     
 }
-rootProject.name = "test"
+rootProject.name = "kotlin-compose-for-desktop-learn"
 
