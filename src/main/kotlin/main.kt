@@ -148,22 +148,21 @@ fun applyChainAction(
     columnIndex: Int,
 ) {
     val currentInsertedTargetShape = gameBoard[rowIndex][columnIndex]
+    val allSearchRules = listOf(1 to 1, 1 to 0, 1 to -1, 0 to 1, 0 to 0, 0 to -1, -1 to 1, -1 to 0, -1 to -1)
 
-    val list = listOf(1 to 1, 1 to 0, 1 to -1, 0 to 1, 0 to 0, 0 to -1, -1 to 1, -1 to 0, -1 to -1)
-
-    list.forEach {
-        a(
+    allSearchRules.forEach { (rowOffset, columnOffset) ->
+        modifyPoints(
             gameBoard = gameBoard,
             basedRowIndex = rowIndex,
             basedColumnIndex = columnIndex,
-            rowOffset = it.first,
-            columnOffset = it.second,
+            rowOffset = rowOffset,
+            columnOffset = columnOffset,
             targetShape = currentInsertedTargetShape
         )
     }
 }
 
-fun a(
+private fun modifyPoints(
     gameBoard: OthelloGameBoard,
     basedRowIndex: Int,
     basedColumnIndex: Int,
