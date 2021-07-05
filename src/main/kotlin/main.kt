@@ -17,14 +17,14 @@ fun main() = Window(
     var othelloGameBoard by remember {
         mutableStateOf(
             arrayOf(
-                charArrayOf('_', '_', '_', '_', '_', '_', '_', '_'),
-                charArrayOf('_', '_', '_', '_', '_', '_', '_', '_'),
-                charArrayOf('_', '_', '_', '_', '_', '_', '_', '_'),
-                charArrayOf('_', '_', '_', '○', '●', '_', '_', '_'),
-                charArrayOf('_', '_', '_', '●', '○', '_', '_', '_'),
-                charArrayOf('_', '_', '_', '_', '_', '_', '_', '_'),
-                charArrayOf('_', '_', '_', '_', '_', '_', '_', '_'),
-                charArrayOf('_', '_', '_', '_', '_', '_', '_', '_'),
+                charArrayOf(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '),
+                charArrayOf(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '),
+                charArrayOf(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '),
+                charArrayOf(' ', ' ', ' ', '○', '●', ' ', ' ', ' '),
+                charArrayOf(' ', ' ', ' ', '●', '○', ' ', ' ', ' '),
+                charArrayOf(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '),
+                charArrayOf(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '),
+                charArrayOf(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '),
             )
         )
     }
@@ -38,13 +38,21 @@ fun main() = Window(
                 rowValue.mapIndexed { columnIndex, columnValue ->
                     Button(
                         onClick = {
-                            othelloGameBoard = getChangedOthelloGameBoard(
+                            othelloGameBoard = insertPointInOthelloGameBoard(
                                 gameBoard = othelloGameBoard,
                                 rowIndex = rowIndex,
                                 columnIndex = columnIndex,
                                 team = if (blackTurn) OthelloTeam.BLACK else OthelloTeam.WHITE
                             )
                             blackTurn = blackTurn.turnEnd()
+
+                            applyChainAction(
+                                gameBoard = othelloGameBoard,
+                                rowIndex = rowIndex,
+                                columnIndex = columnIndex,
+                            )
+
+                            othelloGameBoard.checkEndGame()
                         },
                         modifier = Modifier.weight(4F)
                             .fillMaxWidth(0.125F)
@@ -63,7 +71,7 @@ fun main() = Window(
     }
 }
 
-private fun getChangedOthelloGameBoard(
+private fun insertPointInOthelloGameBoard(
     gameBoard: OthelloGameBoard,
     rowIndex: Int,
     columnIndex: Int,
@@ -109,6 +117,7 @@ private fun createBoardElement(
 enum class OthelloTeam(val shape: Char) {
     BLACK('●'),
     WHITE('○'),
+    ANONYMOUS(' '),
 }
 
 enum class OthelloIndex(val index: Int) {
@@ -120,6 +129,75 @@ enum class OthelloIndex(val index: Int) {
     FIVE(5),
     SIX(6),
     SEVEN(7),
+
+    MAX(7),
+    MIN(0),
 }
 
 fun Boolean.turnEnd() = !this
+
+fun OthelloGameBoard.checkEndGame() =
+    this.count(OthelloTeam.ANONYMOUS)
+
+fun OthelloGameBoard.count(matchCharacter: OthelloTeam) =
+    this.sumOf { row -> row.filter { it == matchCharacter.shape }.count() }
+
+fun applyChainAction(
+    gameBoard: OthelloGameBoard,
+    rowIndex: Int,
+    columnIndex: Int,
+) {
+    val currentInsertedTargetShape = gameBoard[rowIndex][columnIndex]
+
+    val list = listOf(1 to 1, 1 to 0, 1 to -1, 0 to 1, 0 to 0, 0 to -1, -1 to 1, -1 to 0, -1 to -1)
+
+    list.forEach {
+        a(
+            gameBoard = gameBoard,
+            basedRowIndex = rowIndex,
+            basedColumnIndex = columnIndex,
+            rowOffset = it.first,
+            columnOffset = it.second,
+            targetShape = currentInsertedTargetShape
+        )
+    }
+}
+
+fun a(
+    gameBoard: OthelloGameBoard,
+    basedRowIndex: Int,
+    basedColumnIndex: Int,
+    rowOffset: Int,
+    columnOffset: Int,
+    targetShape: Char,
+): OthelloGameBoard {
+    var rowIndex = basedRowIndex
+    var columnIndex = basedColumnIndex
+
+    val modificationReservationIndices = mutableListOf<Pair<Int, Int>>()
+
+    while (true) {
+        rowIndex += rowOffset
+        columnIndex += columnOffset
+
+        if (
+            !(rowIndex.isOnBoard && columnIndex.isOnBoard) ||
+            gameBoard[rowIndex][columnIndex] == OthelloTeam.ANONYMOUS.shape
+        ) {
+            modificationReservationIndices.clear()
+            break
+        }
+        if (gameBoard[rowIndex][columnIndex] == targetShape) break
+
+        modificationReservationIndices.add(rowIndex to columnIndex)
+    }
+
+    modificationReservationIndices.forEach { (row, column) ->
+        gameBoard[row][column] = targetShape
+    }
+
+    return gameBoard
+}
+
+val Int.isOnBoard: Boolean
+    get() = this >= OthelloIndex.MIN.index && this <= OthelloIndex.MAX.index
