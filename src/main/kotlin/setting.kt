@@ -16,10 +16,10 @@ fun createDefaultColors() =
     arrayOf(
         arrayOf(Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White),
         arrayOf(Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White),
-        arrayOf(Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White),
-        arrayOf(Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White),
-        arrayOf(Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White),
-        arrayOf(Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White),
+        arrayOf(Color.White, Color.White, Color.White, Color.Yellow, Color.White, Color.White, Color.White, Color.White),
+        arrayOf(Color.White, Color.White, Color.Yellow, Color.White, Color.White, Color.White, Color.White, Color.White),
+        arrayOf(Color.White, Color.White, Color.White, Color.White, Color.White, Color.Yellow, Color.White, Color.White),
+        arrayOf(Color.White, Color.White, Color.White, Color.White, Color.Yellow, Color.White, Color.White, Color.White),
         arrayOf(Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White),
         arrayOf(Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White, Color.White),
     )

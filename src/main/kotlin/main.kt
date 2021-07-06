@@ -1,14 +1,24 @@
 import androidx.compose.desktop.Window
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 typealias OthelloGameBoard = Array<CharArray>
+typealias GameBoardColors = Array<Array<Color>>
 
 fun main() = Window(
     title = "Othello Game",
@@ -19,6 +29,12 @@ fun main() = Window(
     }
     var blackTurn by remember { mutableStateOf(true) }
     val othelloGameBoardColors = createDefaultColors()
+
+    highlightAvailablePoint(
+        gameBoard = othelloGameBoard,
+        gameBoardColors = othelloGameBoardColors,
+        team = blackTurn.team
+    )
 
     MaterialTheme {
         othelloGameBoard.mapIndexed { rowIndex, rowValue ->
@@ -32,7 +48,7 @@ fun main() = Window(
                                 gameBoard = othelloGameBoard,
                                 rowIndex = rowIndex,
                                 columnIndex = columnIndex,
-                                team = if (blackTurn) OthelloTeam.BLACK else OthelloTeam.WHITE
+                                team = blackTurn.team
                             )
                             blackTurn = blackTurn.turnEnd()
 
@@ -40,6 +56,12 @@ fun main() = Window(
                                 gameBoard = othelloGameBoard,
                                 rowIndex = rowIndex,
                                 columnIndex = columnIndex,
+                            )
+
+                            highlightAvailablePoint(
+                                gameBoard = othelloGameBoard,
+                                gameBoardColors = othelloGameBoardColors,
+                                team = blackTurn.team
                             )
 
                             othelloGameBoard.checkEndGame()
@@ -66,8 +88,8 @@ fun Boolean.turnEnd() = !this
 fun OthelloGameBoard.checkEndGame() =
     this.count(OthelloTeam.ANONYMOUS)
 
-fun OthelloGameBoard.count(matchCharacter: OthelloTeam) =
+private fun OthelloGameBoard.count(matchCharacter: OthelloTeam) =
     this.sumOf { row -> row.filter { it == matchCharacter.shape }.count() }
 
-val Int.isOnBoard: Boolean
-    get() = this >= OthelloIndex.MIN.index && this <= OthelloIndex.MAX.index
+val Boolean.team: OthelloTeam
+    get() = if (this) OthelloTeam.BLACK else OthelloTeam.WHITE

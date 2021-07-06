@@ -1,3 +1,7 @@
+import androidx.compose.ui.graphics.Color
+
+val allSearchRules = listOf(1 to 1, 1 to 0, 1 to -1, 0 to 1, 0 to -1, -1 to 1, -1 to 0, -1 to -1)
+
 fun insertPointInOthelloGameBoard(
     gameBoard: OthelloGameBoard,
     rowIndex: Int,
@@ -47,7 +51,6 @@ fun applyChainAction(
     columnIndex: Int,
 ) {
     val currentInsertedTargetShape = gameBoard[rowIndex][columnIndex]
-    val allSearchRules = listOf(1 to 1, 1 to 0, 1 to -1, 0 to 1, 0 to 0, 0 to -1, -1 to 1, -1 to 0, -1 to -1)
 
     allSearchRules.forEach { (rowOffset, columnOffset) ->
         modifyPoints(
@@ -69,6 +72,24 @@ private fun modifyPoints(
     columnOffset: Int,
     targetShape: Char,
 ): OthelloGameBoard {
+    val modificationReservationIndices =
+        searchChangeablePoint(gameBoard, basedRowIndex, basedColumnIndex, rowOffset, columnOffset, targetShape)
+
+    modificationReservationIndices.forEach { (row, column) ->
+        gameBoard[row][column] = targetShape
+    }
+
+    return gameBoard
+}
+
+private fun searchChangeablePoint(
+    gameBoard: OthelloGameBoard,
+    basedRowIndex: Int,
+    basedColumnIndex: Int,
+    rowOffset: Int,
+    columnOffset: Int,
+    targetShape: Char,
+): List<Pair<Int, Int>> {
     var rowIndex = basedRowIndex
     var columnIndex = basedColumnIndex
 
@@ -90,9 +111,38 @@ private fun modifyPoints(
         modificationReservationIndices.add(rowIndex to columnIndex)
     }
 
-    modificationReservationIndices.forEach { (row, column) ->
-        gameBoard[row][column] = targetShape
-    }
-
-    return gameBoard
+    return modificationReservationIndices
 }
+
+fun highlightAvailablePoint(gameBoard: OthelloGameBoard, gameBoardColors: GameBoardColors, team: OthelloTeam) {
+    for (row in OthelloIndex.MIN.index..OthelloIndex.MAX.index) {
+        for (column in OthelloIndex.MIN.index..OthelloIndex.MAX.index) {
+            var color = Color.White
+            allSearchRules.forEach { (rowOffset, columnOffset) ->
+                val isAvailablePoint = isAvailablePoint(
+                    gameBoard = gameBoard,
+                    basedRowIndex = row,
+                    basedColumnIndex = column,
+                    rowOffset = rowOffset,
+                    columnOffset = columnOffset,
+                    team = team,
+                )
+                color = if (isAvailablePoint || color == Color.Yellow) Color.Yellow else Color.White
+            }
+            gameBoardColors[row][column] = color
+        }
+    }
+}
+
+private fun isAvailablePoint(
+    gameBoard: OthelloGameBoard,
+    basedRowIndex: Int,
+    basedColumnIndex: Int,
+    rowOffset: Int,
+    columnOffset: Int,
+    team: OthelloTeam,
+) = searchChangeablePoint(gameBoard, basedRowIndex, basedColumnIndex, rowOffset, columnOffset, team.shape).isNotEmpty()
+        && gameBoard[basedRowIndex][basedColumnIndex] == OthelloTeam.ANONYMOUS.shape
+
+private val Int.isOnBoard: Boolean
+    get() = this >= OthelloIndex.MIN.index && this <= OthelloIndex.MAX.index
